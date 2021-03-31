@@ -1,4 +1,4 @@
-name := "untitled"
+name := "EmojiGenerator"
 
 version := "0.1"
 

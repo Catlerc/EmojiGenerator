@@ -1,3 +1,7 @@
+import imageProcessing.ImageProcessor
+import userInterface.wrappers.{Button, ComboBox, Label, Panel}
+import userInterface.wrappers
+
 import javax.swing._
 import java.awt.{Color, Component, Container, Dimension, GridLayout, Image, Toolkit}
 import javax.imageio.ImageIO
@@ -9,7 +13,7 @@ import java.text.NumberFormat
 
 object Main {
   def createMainLayout: Container = {
-    val selectedEmoji = CheckIcon()
+    val selectedEmoji = wrappers.CheckIcon()
     val selectFileButton = Button("Select emoji source") {
       val fileChooser = new JFileChooser
       val ret = fileChooser.showDialog(null, "Открыть файл")
@@ -26,26 +30,26 @@ object Main {
       (0, 1, 3) -> Label("rotation type"),
       (4, 1, 2) -> ComboBox("1", "2", "3"),
 
-      (0, 2, 1) -> CheckIcon(),
-      (1, 2, 1) -> CheckIcon(),
-      (2, 2, 1) -> CheckIcon(),
-      (3, 2, 1) -> CheckIcon(),
-      (4, 2, 1) -> CheckIcon(),
-      (5, 2, 1) -> CheckIcon(),
+      (0, 2, 1) -> wrappers.CheckIcon(),
+      (1, 2, 1) -> wrappers.CheckIcon(),
+      (2, 2, 1) -> wrappers.CheckIcon(),
+      (3, 2, 1) -> wrappers.CheckIcon(),
+      (4, 2, 1) -> wrappers.CheckIcon(),
+      (5, 2, 1) -> wrappers.CheckIcon(),
 
-      (0, 3, 1) -> CheckIcon(),
-      (1, 3, 1) -> CheckIcon(),
-      (2, 3, 1) -> CheckIcon(),
-      (3, 3, 1) -> CheckIcon(),
-      (4, 3, 1) -> CheckIcon(),
-      (5, 3, 1) -> CheckIcon(),
+      (0, 3, 1) -> wrappers.CheckIcon(),
+      (1, 3, 1) -> wrappers.CheckIcon(),
+      (2, 3, 1) -> wrappers.CheckIcon(),
+      (3, 3, 1) -> wrappers.CheckIcon(),
+      (4, 3, 1) -> wrappers.CheckIcon(),
+      (5, 3, 1) -> wrappers.CheckIcon(),
 
-      (0, 4, 1) -> CheckIcon(),
-      (1, 4, 1) -> CheckIcon(),
-      (2, 4, 1) -> CheckIcon(),
-      (3, 4, 1) -> CheckIcon(),
-      (4, 4, 1) -> CheckIcon(),
-      (5, 4, 1) -> CheckIcon(),
+      (0, 4, 1) -> wrappers.CheckIcon(),
+      (1, 4, 1) -> wrappers.CheckIcon(),
+      (2, 4, 1) -> wrappers.CheckIcon(),
+      (3, 4, 1) -> wrappers.CheckIcon(),
+      (4, 4, 1) -> wrappers.CheckIcon(),
+      (5, 4, 1) -> wrappers.CheckIcon(),
     )
   }
 

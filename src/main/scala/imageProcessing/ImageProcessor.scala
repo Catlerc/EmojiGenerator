@@ -1,10 +1,11 @@
+package imageProcessing
+
+import userInterface.IconSetter
+import userInterface.wrappers.Panel
+
 import java.awt.image.ImageObserver
 import java.awt.{Component, Image, Toolkit}
-import javax.swing.{Icon, ImageIcon}
-
-trait IconSetter[C] {
-  def setIcon(component: C, icon: Icon): Unit
-}
+import javax.swing.ImageIcon
 
 case class ImageProcessor(image: Image) {
   def toIcon[C <: Component with ImageObserver](component: C)(implicit iconSetter: IconSetter[C]): Unit = {
