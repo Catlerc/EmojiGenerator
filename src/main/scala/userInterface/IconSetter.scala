@@ -1,6 +1,5 @@
 package userInterface
 
-
 import javax.swing._
 
 trait IconSetter[C] {
