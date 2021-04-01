@@ -1,5 +1,6 @@
 package userInterface
 
+import app.Context
 import imageProcessing.ImageProcessor
 import userInterface.components._
 
@@ -7,7 +8,7 @@ import java.awt.Container
 import javax.swing.{JFileChooser, JFrame}
 
 case class EmojiEditorComponents(
-    emojiSelectButton: Button,
+    emojiSelectButton: EmojiOpenDialog,
     selectedEmoji: EmojiView,
     emojiName: Label,
     emojiSpeedRate: Spinner,
@@ -68,17 +69,11 @@ class MainForm(editorComponents: EmojiEditorComponents) {
 }
 
 object MainForm {
-  def apply(): MainForm = {
+  def apply(context: Context): MainForm = {
     val selectedEmoji = EmojiView()
-    val selectFileButton = Button("Select emoji source") {
-      val fileChooser = new JFileChooser
-      val ret = fileChooser.showDialog(null, "Открыть файл")
-      if (ret == JFileChooser.APPROVE_OPTION)
-        Option(fileChooser.getSelectedFile).foreach { file =>
-          ImageProcessor
-            .fromImagePath(file.getCanonicalPath)
-            .toIcon(selectedEmoji)
-        }
+    val selectFileButton = EmojiOpenDialog("Select emoji source") { emoji =>
+      context.emoji = Some(emoji)
+      selectedEmoji.setEmoji(emoji)
     }
     val components =
       EmojiEditorComponents(

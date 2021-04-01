@@ -9,8 +9,8 @@ import javax.swing.{ImageIcon, JButton}
 case class CheckEmojiBox(
     var isChecked: Boolean = false,
     var maybeImage: Option[Emoji] = None
-) extends EmojiViewBase
-    with Component {
+) extends JButton
+    with EmojiViewBase {
 
   import CheckEmojiBox._
 
