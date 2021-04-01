@@ -1,4 +1,4 @@
-package userInterface.wrappers
+package userInterface.components
 
 import imageProcessing.Emoji
 import userInterface.IconSetter
@@ -9,6 +9,10 @@ import javax.swing.{ImageIcon, JButton}
 case class EmojiView(
     var maybeImage: Option[Emoji] = None
 ) extends EmojiViewBase
+
+object EmojiView {
+  implicit val iconSetter: IconSetter[EmojiView] = _.setIcon(_)
+}
 
 trait EmojiViewBase extends JButton with Component {
 
@@ -25,5 +29,5 @@ trait EmojiViewBase extends JButton with Component {
 }
 
 object EmojiViewBase {
-  implicit val iconSetter: IconSetter[CheckEmojiBox] = _.setIcon(_)
+  implicit val iconSetter: IconSetter[EmojiViewBase] = _.setIcon(_)
 }

@@ -1,10 +1,12 @@
-package userInterface.wrappers
+package userInterface.components
 
 import userInterface.IconSetter
 
 import javax.swing.JButton
 
-case class Button(label: String)(onClick: => Unit) extends JButton(label) with Component {
+case class Button(label: String)(onClick: => Unit)
+    extends JButton(label)
+    with Component {
   val padding = 4
 
   addActionListener(_ => onClick)

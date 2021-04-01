@@ -1,4 +1,4 @@
-package userInterface.wrappers
+package userInterface.components
 
 import imageProcessing.Emoji
 import userInterface.IconSetter
