@@ -1,5 +1,3 @@
-package app
-
-import imageProcessing.Emoji
+package com.es
 
 case class Context(var emoji: Option[Emoji])

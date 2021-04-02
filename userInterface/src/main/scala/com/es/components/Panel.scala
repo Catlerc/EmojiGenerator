@@ -1,4 +1,4 @@
-package userInterface.components
+package com.es.components
 
 import javax.swing.JPanel
 
@@ -10,7 +10,7 @@ case class Panel(components: ((Int, Int, Int), Component)*) extends JPanel {
 
   setLayout(null)
   components.foreach {
-    case (x, y, w) -> component =>
+    case ((x, y, w), component) =>
       component.setBounds(
         x * cellSize + component.padding,
         y * cellSize + component.padding,

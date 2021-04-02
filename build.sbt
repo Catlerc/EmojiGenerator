@@ -1,15 +1,59 @@
 name := "EmojiGenerator"
-
 version := "0.1"
-
+organization in ThisBuild := "com.es"
 scalaVersion := "2.13.5"
 
-libraryDependencies ++= List(
+lazy val commonDependencies = List(
   "org.typelevel" %% "cats-core" % "2.5.0",
   "com.sksamuel.scrimage" % "scrimage-core" % "4.0.17"
 )
 
-assemblyMergeStrategy in assembly := {
-  case PathList("META-INF", _ @_*) => MergeStrategy.discard
-  case _                           => MergeStrategy.first
-}
+lazy val global = project
+  .in(file("."))
+  .settings(
+    assemblyMergeStrategy in assembly := {
+      case PathList("META-INF", _ @_*) => MergeStrategy.discard
+      case _                           => MergeStrategy.first
+    }
+  )
+  .aggregate(
+    common,
+    userInterface,
+    imageProcessing,
+    app
+  )
+
+lazy val common = project
+  .settings(
+    name := "common",
+    libraryDependencies ++= commonDependencies
+  )
+
+lazy val app = project
+  .settings(
+    name := "app",
+    libraryDependencies ++= commonDependencies
+  )
+  .dependsOn(
+    common,
+    userInterface,
+    imageProcessing
+  )
+
+lazy val userInterface = project
+  .settings(
+    name := "userInterface",
+    libraryDependencies ++= commonDependencies
+  )
+  .dependsOn(
+    common
+  )
+
+lazy val imageProcessing = project
+  .settings(
+    name := "imageProcessing",
+    libraryDependencies ++= commonDependencies
+  )
+  .dependsOn(
+    common
+  )

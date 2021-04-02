@@ -1,7 +1,4 @@
-package imageProcessing
-
-import userInterface.IconSetter
-import userInterface.components.Panel
+package com.es
 
 import java.awt.image.ImageObserver
 import java.awt.{Component, Image, Toolkit}
@@ -13,7 +10,7 @@ case class ImageProcessor(image: Image) {
   )(implicit iconSetter: IconSetter[C]): Unit = {
     val height = image.getHeight(component)
     val width = image.getWidth(component)
-    val maxFactor = (Panel.cellSize - 8) / Math.max(height, width)
+    val maxFactor = (64 - 8) / Math.max(height, width) //FIXME!!!!
     val scaledImage =
       image.getScaledInstance(
         width * maxFactor,

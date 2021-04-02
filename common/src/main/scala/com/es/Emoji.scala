@@ -1,4 +1,4 @@
-package imageProcessing
+package com.es
 
 import com.sksamuel.scrimage.ImmutableImage
 import com.sksamuel.scrimage.angles.Degrees

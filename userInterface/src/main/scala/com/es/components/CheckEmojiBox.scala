@@ -1,10 +1,9 @@
-package userInterface.components
+package com.es.components
 
-import imageProcessing.Emoji
-import userInterface.IconSetter
+import com.es.{Emoji, IconSetter}
 
-import java.awt.{Color, Image}
-import javax.swing.{ImageIcon, JButton}
+import java.awt.Color
+import javax.swing.JButton
 
 case class CheckEmojiBox(
     var isChecked: Boolean = false,

@@ -1,10 +1,8 @@
-package userInterface.components
+package com.es.components
 
-import imageProcessing.Emoji
-import userInterface.IconSetter
+import com.es.{Emoji, IconSetter}
 
-import java.awt.Color
-import javax.swing.{Icon, ImageIcon, JButton, JComponent, JLabel}
+import javax.swing.{Icon, ImageIcon, JLabel}
 
 case class EmojiView(
     var maybeImage: Option[Emoji] = None

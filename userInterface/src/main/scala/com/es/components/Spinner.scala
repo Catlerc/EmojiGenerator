@@ -1,4 +1,4 @@
-package userInterface.components
+package com.es.components
 
 import javax.swing.{JSpinner, SpinnerNumberModel}
 

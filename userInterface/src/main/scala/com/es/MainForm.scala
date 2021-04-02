@@ -1,11 +1,17 @@
-package userInterface
+package com.es
 
-import app.Context
-import imageProcessing.ImageProcessor
-import userInterface.components._
+import com.es.components.{
+  Button,
+  CheckEmojiBox,
+  ComboBox,
+  EmojiOpenDialog,
+  EmojiView,
+  Label,
+  Panel,
+  Spinner
+}
 
-import java.awt.Container
-import javax.swing.{JFileChooser, JFrame}
+import javax.swing.JFrame
 
 case class EmojiEditorComponents(
     emojiSelectButton: EmojiOpenDialog,
@@ -32,7 +38,7 @@ case class EmojiEditorComponents(
 
 class MainForm(editorComponents: EmojiEditorComponents) {
   val frame = {
-    val frame = new JFrame("Emoji generator")
+    val frame = new JFrame("com.es.Emoji generator")
     frame.setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE)
     frame.setSize(400, 300)
     frame.getContentPane.add(
@@ -69,17 +75,16 @@ class MainForm(editorComponents: EmojiEditorComponents) {
 }
 
 object MainForm {
-  def apply(context: Context): MainForm = {
+  def apply(): MainForm = {
     val selectedEmoji = EmojiView()
     val selectFileButton = EmojiOpenDialog("Select emoji source") { emoji =>
-      context.emoji = Some(emoji)
       selectedEmoji.setEmoji(emoji)
     }
     val components =
       EmojiEditorComponents(
         emojiSelectButton = selectFileButton,
         selectedEmoji = selectedEmoji,
-        emojiName = Label("<Emoji Not Selected>"),
+        emojiName = Label("<com.es.Emoji Not Selected>"),
         emojiSpeedRate = Spinner(1, 1, 10, 1),
         emojiCornerStyle = ComboBox("1", "2"),
         emojiAnimationDownToRight = CheckEmojiBox(),

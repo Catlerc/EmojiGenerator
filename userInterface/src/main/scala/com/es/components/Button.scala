@@ -1,6 +1,6 @@
-package userInterface.components
+package com.es.components
 
-import userInterface.IconSetter
+import com.es.IconSetter
 
 import javax.swing.JButton
 

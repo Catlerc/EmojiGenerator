@@ -1,6 +1,6 @@
-package userInterface.components
+package com.es.components
 
-import imageProcessing.{Emoji, ImageProcessor}
+import com.es.Emoji
 
 import javax.swing.{JButton, JFileChooser}
 
