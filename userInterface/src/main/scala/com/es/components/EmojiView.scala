@@ -1,35 +1,22 @@
 package com.es.components
 
-import com.es.{Emoji, IconSetter}
+import cats.effect.{IO, Ref}
+import cats.syntax.option._
+import com.es.Emoji
+import com.es.componentBases.EmojiViewBase
 
-import javax.swing.{Icon, ImageIcon, JLabel}
+import javax.swing.{ImageIcon, JLabel}
 
-case class EmojiView(
-    var maybeImage: Option[Emoji] = None
-) extends JLabel
-    with EmojiViewBase
+case class EmojiView(underlying: JLabel, emojiRef: Ref[IO, Option[Emoji]]) extends EmojiViewBase[JLabel] {
+
+  override def setEmoji(newEmoji: Emoji): IO[Unit] =
+    emojiRef.set(Some(newEmoji)) *>
+      IO(
+        underlying.setIcon(new ImageIcon(newEmoji.toSwingImage))
+      )
+}
 
 object EmojiView {
-  implicit val iconSetter: IconSetter[EmojiView] = _.setIcon(_)
-}
-
-trait EmojiViewBase extends Component {
-
-  def setIcon(icon: Icon): Unit
-
-  var maybeImage: Option[Emoji]
-
-  val padding = 0
-
-  def setEmoji(newEmoji: Emoji): Unit = {
-    maybeImage = Some(newEmoji)
-    setIcon(new ImageIcon(newEmoji.toSwingImage))
-
-  }
-
-  maybeImage.foreach(image => setIcon(new ImageIcon(image.toSwingImage)))
-}
-
-object EmojiViewBase {
-  implicit val iconSetter: IconSetter[EmojiViewBase] = _.setIcon(_)
+  def apply(): IO[EmojiView] =
+    IO.ref(none[Emoji]).map(new EmojiView(new JLabel(), _))
 }

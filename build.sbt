@@ -4,8 +4,10 @@ organization in ThisBuild := "com.es"
 scalaVersion := "2.13.5"
 
 lazy val commonDependencies = List(
-  "org.typelevel" %% "cats-core" % "2.5.0",
-  "com.sksamuel.scrimage" % "scrimage-core" % "4.0.17"
+  "com.sksamuel.scrimage" % "scrimage-core" % "4.0.17",
+  "org.typelevel" %% "cats-effect" % "3.0.1",
+  "org.typelevel" %% "cats-effect-kernel" % "3.0.0",
+  "org.typelevel" %% "cats-core" % "2.5.0"
 )
 
 lazy val global = project

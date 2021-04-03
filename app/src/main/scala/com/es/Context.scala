@@ -1,3 +1,3 @@
 package com.es
 
-case class Context(var emoji: Option[Emoji])
+case class Context(emoji: Option[Emoji])

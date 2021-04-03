@@ -1,17 +1,13 @@
 package com.es.components
 
-import com.es.IconSetter
+import cats.effect.IO
+import com.es.componentBases.ButtonBase
 
 import javax.swing.JButton
 
-case class Button(label: String)(onClick: => Unit)
-    extends JButton(label)
-    with Component {
-  val padding = 4
-
-  addActionListener(_ => onClick)
-}
+class Button(val underlying: JButton, val runOnClick: IO[Unit]) extends ButtonBase
 
 object Button {
-  implicit val iconSetter: IconSetter[Button] = _.setIcon(_)
+  def apply(label: String)(runOnClick: IO[Unit]): IO[Button] =
+    IO(new JButton(label)).map(new Button(_, runOnClick))
 }
