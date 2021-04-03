@@ -103,7 +103,11 @@ object MainForm {
       emojiRotationClockwise <- CheckEmojiBox()
       emojiRotationCounterClockwise <- CheckEmojiBox()
       exportButton <- Button("export") {
-        IO(print(" is export"))
+        for {
+          _ <- IO.delay(println("died?"))
+          _ <- IO.raiseError(new Exception("you died"))
+        } yield ()
+
       }
       emojiName <- Label("<com.es.Emoji Not Selected>")
       emojiSpeedRate <- Spinner(1, 1, 10, 1)

@@ -30,7 +30,11 @@ class CheckEmojiBox(
 
   override def setEmoji(newEmoji: Emoji): IO[Unit] =
     emojiRef.set(Some(newEmoji)) *>
-      IO(underlying.setIcon(new ImageIcon(newEmoji.toSwingImage)))
+      IO {
+        val awtEmojiImage = new ImageIcon(newEmoji.toSwingImage)
+        underlying.setIcon(awtEmojiImage)
+        awtEmojiImage.setImageObserver(underlying)
+      }
 
   val runOnClick: IO[Unit] = switch
 }

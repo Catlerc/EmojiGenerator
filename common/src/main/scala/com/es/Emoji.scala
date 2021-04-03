@@ -11,10 +11,10 @@ case class Emoji(image: ImmutableImage) {
 }
 
 object Emoji {
-  val size = 64
+  val size = 32
   def fromFile(file: File): IO[Emoji] =
     for {
       image <- IO(ImmutableImage.loader().fromFile(file))
-      sizedImage = image.scale(size / math.max(image.width, image.height))
+      sizedImage = image.scale(size / (math.max(image.width, image.height): Float))
     } yield Emoji(sizedImage)
 }

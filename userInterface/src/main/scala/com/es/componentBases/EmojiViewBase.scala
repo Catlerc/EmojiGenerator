@@ -7,7 +7,6 @@ import com.es.components.Component
 import javax.swing.JComponent
 
 trait EmojiViewBase[+C <: JComponent] extends Component[C] {
-
   val emojiRef: Ref[IO, Option[Emoji]]
 
   def setEmoji(newEmoji: Emoji): IO[Unit]

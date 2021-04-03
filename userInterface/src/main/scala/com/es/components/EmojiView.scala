@@ -11,9 +11,11 @@ case class EmojiView(underlying: JLabel, emojiRef: Ref[IO, Option[Emoji]]) exten
 
   override def setEmoji(newEmoji: Emoji): IO[Unit] =
     emojiRef.set(Some(newEmoji)) *>
-      IO(
-        underlying.setIcon(new ImageIcon(newEmoji.toSwingImage))
-      )
+      IO {
+        val awtEmojiImage = new ImageIcon(newEmoji.toSwingImage)
+        underlying.setIcon(awtEmojiImage)
+        awtEmojiImage.setImageObserver(underlying)
+      }
 }
 
 object EmojiView {
