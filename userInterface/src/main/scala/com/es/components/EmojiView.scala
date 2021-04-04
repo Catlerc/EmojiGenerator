@@ -9,12 +9,17 @@ import javax.swing.{ImageIcon, JLabel}
 
 case class EmojiView(underlying: JLabel, emojiRef: Ref[IO, Option[Emoji]]) extends EmojiViewBase[JLabel] {
 
-  override def setEmoji(newEmoji: Emoji): IO[Unit] =
-    emojiRef.set(Some(newEmoji)) *>
+  override def setEmoji(maybeEmoji: Option[Emoji]): IO[Unit] =
+    emojiRef.set(maybeEmoji) *>
       IO {
-        val awtEmojiImage = new ImageIcon(newEmoji.toSwingImage)
-        underlying.setIcon(awtEmojiImage)
-        awtEmojiImage.setImageObserver(underlying)
+        maybeEmoji match {
+          case Some(newEmoji) =>
+            val awtEmojiImage = new ImageIcon(newEmoji.toSwingImage)
+            underlying.setIcon(awtEmojiImage)
+            awtEmojiImage.setImageObserver(underlying)
+          case None =>
+            underlying.setIcon(null)
+        }
       }
 }
 

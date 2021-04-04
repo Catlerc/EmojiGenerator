@@ -9,14 +9,14 @@ import com.es.componentBases.{ButtonBase, EmojiViewBase}
 import java.awt.Color
 import javax.swing.{ImageIcon, JButton}
 
-class CheckEmojiBox(
+class EmojiCheckBox(
     val underlying: JButton,
     isCheckedRef: Ref[IO, Boolean],
     val emojiRef: Ref[IO, Option[Emoji]]
 ) extends ButtonBase
     with EmojiViewBase[JButton] {
 
-  import CheckEmojiBox._
+  import EmojiCheckBox._
 
   def setBackgroundColor(color: Color): IO[Unit] =
     IO(underlying.setBackground(color))
@@ -28,29 +28,35 @@ class CheckEmojiBox(
     isCheckedRef.getAndUpdate(!_) *>
       changeBackGroundColor
 
-  override def setEmoji(newEmoji: Emoji): IO[Unit] =
-    emojiRef.set(Some(newEmoji)) *>
+  def setEmoji(maybeEmoji: Option[Emoji]): IO[Unit] =
+    emojiRef.set(maybeEmoji) *>
       IO {
-        val awtEmojiImage = new ImageIcon(newEmoji.toSwingImage)
-        underlying.setIcon(awtEmojiImage)
-        awtEmojiImage.setImageObserver(underlying)
+        maybeEmoji match {
+          case Some(newEmoji) =>
+            val awtEmojiImage = new ImageIcon(newEmoji.toSwingImage)
+            underlying.setIcon(awtEmojiImage)
+            awtEmojiImage.setImageObserver(underlying)
+          case None =>
+            underlying.setIcon(null)
+        }
       }
 
   val runOnClick: IO[Unit] = switch
 }
 
-object CheckEmojiBox {
+object EmojiCheckBox {
   val checkedColor = new Color(0, 0, 180)
   val uncheckedColor = new Color(0, 0, 0)
 
   def apply(
       isChecked: Boolean = false
-  )(implicit dispatcher: Dispatcher[IO]): IO[CheckEmojiBox] =
+  )(implicit dispatcher: Dispatcher[IO]): IO[EmojiCheckBox] =
     for {
       isCheckedRef <- IO.ref(isChecked)
       emojiRef <- IO.ref(none[Emoji])
       underlying <- IO(new JButton)
-      checkEmojiBox = new CheckEmojiBox(underlying, isCheckedRef, emojiRef)
-      _ <- checkEmojiBox.registerEvent
-    } yield checkEmojiBox
+      checkBox = new EmojiCheckBox(underlying, isCheckedRef, emojiRef)
+      _ <- checkBox.registerEvent
+      _ <- checkBox.changeBackGroundColor
+    } yield checkBox
 }

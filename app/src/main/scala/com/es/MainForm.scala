@@ -1,11 +1,13 @@
 package com.es
 
-import cats.effect.{IO, Ref}
 import cats.effect.std.{CountDownLatch, Dispatcher}
+import cats.effect.{IO, Ref}
 import com.es.components._
+import cats.syntax.traverse._
+import cats.instances.list._
 
 import java.awt.event.{WindowAdapter, WindowEvent}
-import javax.swing.JFrame
+import javax.swing.{JFrame, JOptionPane}
 
 case class EmojiEditorComponents(
     emojiSelectButton: EmojiOpenDialog,
@@ -13,7 +15,7 @@ case class EmojiEditorComponents(
     emojiName: Label,
     emojiSpeedRate: Spinner,
     emojiCornerStyle: ComboBox,
-    emojiTest: CheckEmojiBox,
+    emojiTest: EmojiCheckBox,
     exportButton: Button
 )
 
@@ -32,7 +34,11 @@ object MainForm {
   def apply(contextRef: Ref[IO, Context])(implicit dispatcher: Dispatcher[IO]): IO[MainForm] =
     for {
       selectedEmoji <- EmojiView()
-      emojiTest <- CheckEmojiBox()
+      emojiTest <- TransformedEmojiCheckBox(Transformers.verticalTransformer)
+
+      toUpdate = List(
+        emojiTest
+      )
 
       emojiName <- Label("no name")
       speedRateLabel <- Label("speed rate")
@@ -41,10 +47,24 @@ object MainForm {
       emojiSpeedRate <- Spinner(1, 1, 10, 1)
       emojiCornerStyle <- ComboBox("1", "2")
 
-      exportButton <- Button("export") { IO.raiseError(new Exception("you died")) }
+      exportButton <- Button("export") {
+        for {
+          context <- contextRef.get
+          _ <- context.emoji match {
+            case Some(value) => IO.raiseError(new Exception("not implemented :pepe:"))
+            case None =>
+              IO {
+                JOptionPane
+                  .showInternalMessageDialog(null, "Сначала выберите эмодзи", "Error!", JOptionPane.ERROR_MESSAGE)
+              }
+          }
+        } yield ()
+      }
       selectFileButton <- EmojiOpenDialog("Select emoji source")(emoji =>
         for {
           _ <- contextRef.set(Context(Some(emoji)))
+          _ <- selectedEmoji.setEmoji(Some(emoji))
+          _ <- toUpdate.traverse(_.transformAndSetEmoji(Some(emoji)))
         } yield ()
       )
 
