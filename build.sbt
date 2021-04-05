@@ -16,7 +16,8 @@ lazy val global = project
     assemblyMergeStrategy in assembly := {
       case PathList("META-INF", _ @_*) => MergeStrategy.discard
       case _                           => MergeStrategy.first
-    }
+    },
+    addCompilerPlugin("com.olegpy" %% "better-monadic-for" % "0.3.1")
   )
   .aggregate(
     common,

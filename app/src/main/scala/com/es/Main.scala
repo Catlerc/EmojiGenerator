@@ -3,14 +3,31 @@ package com.es
 import cats.effect.std.Dispatcher
 import cats.effect.{ExitCode, IO, IOApp}
 
+import java.io.{PrintWriter, StringWriter}
+import javax.swing.JOptionPane
+
 object Main extends IOApp {
   override def run(args: List[String]): IO[ExitCode] =
-    Dispatcher[IO].use { implicit dispatcher =>
-      for {
-        contextRef <- IO.ref(Context(None)) //FIXME: use context
-        form <- MainForm(contextRef)
-        _ <- form.show
-        _ <- IO(println("bye bye"))
-      } yield ExitCode.Success
-    }
+    Dispatcher[IO]
+      .use { implicit dispatcher =>
+        {
+          for {
+            emojiOpenForm <- EmojiOpenForm()
+            maybeEmojiInfo <- emojiOpenForm.show
+            restartFlag <- maybeEmojiInfo match {
+              case Some(emojiInfo) => EmojiTransformForm(emojiInfo).flatMap(_.show)
+              case None            => IO.pure(false)
+            }
+          } yield restartFlag
+        }.iterateWhile(identity(_: Boolean)).as(ExitCode.Success)
+      }
+      .onError(throwable =>
+        IO.delay {
+          val stringWriter = new StringWriter
+          val printWriter = new PrintWriter(stringWriter)
+          throwable.printStackTrace(printWriter)
+          val errorString = stringWriter.toString
+          JOptionPane.showInternalMessageDialog(null, errorString, "Error!", JOptionPane.ERROR_MESSAGE) // null :c
+        }
+      )
 }
