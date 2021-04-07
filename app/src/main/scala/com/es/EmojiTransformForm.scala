@@ -2,9 +2,13 @@ package com.es
 
 import cats.effect.{IO, Ref}
 import cats.effect.std.Dispatcher
-import com.es.components.{Button, ComboBox, EmojiOpenDialog, EmojiView, Frame, Label, Panel, Spinner}
+import com.es.components.{Button, ComboBox, EmojiCheckBox, EmojiOpenDialog, EmojiView, Frame, Label, Panel, Spinner}
 import cats.syntax.traverse._
-import javax.swing.JOptionPane
+import com.es.componentBases.EmojiViewBase
+import com.sksamuel.scrimage.nio.PngWriter
+
+import java.io.File
+import javax.swing.{JComponent, JOptionPane}
 
 class EmojiTransformForm(frame: Frame, restartFlagRef: Ref[IO, Boolean]) {
   val show: IO[Boolean] = frame.show *> restartFlagRef.get
@@ -12,6 +16,17 @@ class EmojiTransformForm(frame: Frame, restartFlagRef: Ref[IO, Boolean]) {
 }
 
 object EmojiTransformForm {
+  private def saveEmoji(sourceEmojiName: String)(info: EmojiInfo): IO[Unit] =
+    IO {
+      val applicationDir = System.getProperty("user.dir")
+      info.emoji.image.output(PngWriter.NoCompression, new File(s"$applicationDir/$sourceEmojiName/${info.name}.png"))
+    }
+  private def updateView(
+      info: EmojiInfo
+  )(transformer: EmojiTransformer, checkBox: EmojiCheckBox): IO[(EmojiCheckBox, EmojiInfo)] = {
+    val newEmoji = transformer.transform(info)
+    checkBox.setEmoji(Some(newEmoji.emoji)).as(checkBox -> newEmoji)
+  }
   def apply(emojiInfo: EmojiInfo)(implicit dispatcher: Dispatcher[IO]): IO[EmojiTransformForm] =
     for {
       restartFlagRef <- IO.ref[Boolean](false)
@@ -19,18 +34,19 @@ object EmojiTransformForm {
       selectedEmoji <- EmojiView()
       _ <- selectedEmoji.setEmoji(Some(emojiInfo.emoji))
 
-      emojiVerticalMirror <- TransformedEmojiCheckBox(Transformers.verticalMirrorTransformer)
-      emojiHorizontalMirror <- TransformedEmojiCheckBox(Transformers.horizontalMirrorTransformer)
-      emojiTestClockwiseRotation <- TransformedEmojiCheckBox(Transformers.rotationClockwiseTransformer)
-      emojiTestCounterClockwiseRotation <- TransformedEmojiCheckBox(Transformers.rotationCounterclockwiseTransformer)
+      emojiVerticalMirror <- EmojiCheckBox()
+      emojiHorizontalMirror <- EmojiCheckBox()
+      emojiTestClockwiseRotation <- EmojiCheckBox()
+      emojiTestCounterClockwiseRotation <- EmojiCheckBox()
 
-      toUpdate = List(
-        emojiVerticalMirror,
-        emojiHorizontalMirror,
-        emojiTestClockwiseRotation,
-        emojiTestCounterClockwiseRotation
-      )
-      _ <- toUpdate.traverse(_.transformAndSetEmoji(Some(emojiInfo.emoji)))
+      update = updateView(emojiInfo)(_, _)
+      transformedEmojies <- List(
+        update(Transformers.verticalMirrorTransformer, emojiVerticalMirror),
+        update(Transformers.verticalMirrorTransformer, emojiVerticalMirror),
+        update(Transformers.horizontalMirrorTransformer, emojiHorizontalMirror),
+        update(Transformers.rotationClockwiseTransformer, emojiTestClockwiseRotation),
+        update(Transformers.rotationCounterclockwiseTransformer, emojiTestCounterClockwiseRotation)
+      ).sequence
 
       emojiNameLabel <- Label("Исходное эмодзи")
       emojiName <- Label(emojiInfo.name)
@@ -41,7 +57,11 @@ object EmojiTransformForm {
       emojiCornerStyle <- ComboBox("1", "2")
 
       exportButton <- Button("export") {
-        IO.unit
+        for {
+          emojies <- transformedEmojies.traverse { case (view, info) => view.state.map(_ -> info) }
+          filtered = emojies.collect { case (true, info) => info }
+          _ <- filtered.traverse(saveEmoji(emojiInfo.name))
+        } yield ()
       }
 
       content <- Panel(

@@ -1,7 +1,6 @@
 name := "EmojiGenerator"
 version := "0.1"
 organization in ThisBuild := "com.es"
-scalaVersion := "2.13.5"
 
 lazy val commonDependencies = List(
   "com.sksamuel.scrimage" % "scrimage-core" % "4.0.17",
@@ -9,16 +8,13 @@ lazy val commonDependencies = List(
   "org.typelevel" %% "cats-effect-kernel" % "3.0.0",
   "org.typelevel" %% "cats-core" % "2.5.0"
 )
+lazy val commonSettings = List(
+  scalaVersion := "2.13.5"
+)
 
 lazy val global = project
   .in(file("."))
-  .settings(
-    assemblyMergeStrategy in assembly := {
-      case PathList("META-INF", _ @_*) => MergeStrategy.discard
-      case _                           => MergeStrategy.first
-    },
-    addCompilerPlugin("com.olegpy" %% "better-monadic-for" % "0.3.1")
-  )
+  .settings(commonSettings)
   .aggregate(
     common,
     userInterface,
@@ -28,12 +24,14 @@ lazy val global = project
 
 lazy val common = project
   .settings(
+    commonSettings,
     name := "common",
     libraryDependencies ++= commonDependencies
   )
 
 lazy val app = project
   .settings(
+    commonSettings,
     name := "app",
     libraryDependencies ++= commonDependencies
   )
@@ -45,6 +43,7 @@ lazy val app = project
 
 lazy val userInterface = project
   .settings(
+    commonSettings,
     name := "userInterface",
     libraryDependencies ++= commonDependencies
   )
@@ -54,6 +53,7 @@ lazy val userInterface = project
 
 lazy val imageProcessing = project
   .settings(
+    commonSettings,
     name := "imageProcessing",
     libraryDependencies ++= commonDependencies
   )

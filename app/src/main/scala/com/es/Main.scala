@@ -27,7 +27,12 @@ object Main extends IOApp {
           val printWriter = new PrintWriter(stringWriter)
           throwable.printStackTrace(printWriter)
           val errorString = stringWriter.toString
-          JOptionPane.showInternalMessageDialog(null, errorString, "Error!", JOptionPane.ERROR_MESSAGE) // null :c
+          JOptionPane.showMessageDialog(
+            null,
+            errorString,
+            s"Error! ${throwable.getMessage}",
+            JOptionPane.ERROR_MESSAGE
+          ) // null :c
         }
       )
 }

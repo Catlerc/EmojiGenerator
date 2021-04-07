@@ -13,7 +13,9 @@ class Frame(underlying: JFrame, windowLock: CountDownLatch[IO])(implicit dispatc
     })
     underlying.setVisible(true)
   } *> windowLock.await
-  val close: IO[Unit] = IO(underlying.dispatchEvent(new WindowEvent(underlying, WindowEvent.WINDOW_CLOSING)))
+  val close: IO[Unit] = IO {
+    underlying.dispatchEvent(new WindowEvent(underlying, WindowEvent.WINDOW_CLOSING))
+  }
   def setContent(content: Component[JComponent]): IO[Unit] = {
     for {
       rectangle <- content.getSize

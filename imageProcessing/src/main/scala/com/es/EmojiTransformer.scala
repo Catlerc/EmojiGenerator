@@ -1,7 +1,11 @@
 package com.es
 
-trait EmojiTransformer {
-  def apply(emoji: Emoji): Emoji
-  def andNext(next: EmojiTransformer): EmojiTransformer =
-    emoji => next.apply(apply(emoji))
+class EmojiTransformer(postfix: String, func: Emoji => Emoji) {
+  def transform(info: EmojiInfo): EmojiInfo = {
+    EmojiInfo(func(info.emoji), s"${info.name}_$postfix")
+  }
+}
+
+object EmojiTransformer {
+  def apply(postfix: String, func: Emoji => Emoji): EmojiTransformer = new EmojiTransformer(postfix, func)
 }

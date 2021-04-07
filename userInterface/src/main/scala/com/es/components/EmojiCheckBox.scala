@@ -21,6 +21,8 @@ class EmojiCheckBox(
   def setBackgroundColor(color: Color): IO[Unit] =
     IO(underlying.setBackground(color))
 
+  val state: IO[Boolean] = isCheckedRef.get
+
   val changeBackGroundColor: IO[Unit] =
     isCheckedRef.get.flatMap(isChecked => setBackgroundColor(if (isChecked) checkedColor else uncheckedColor))
 

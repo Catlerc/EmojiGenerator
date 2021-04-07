@@ -23,7 +23,13 @@ class EmojiOpenDialog(
         IO(Option(fileChooser.getSelectedFile))
       else
         IO.none
-    _ <- maybeFile.traverse(file => Emoji.fromFile(file).map(EmojiInfo(_, file.getName)).flatMap(onSelectEmoji))
+    _ <- maybeFile.traverse(file => {
+      val emojiName = file.getName.split('.').headOption match {
+        case None | Some("") => "emoji"
+        case Some(value)     => value
+      }
+      Emoji.fromFile(file).map(EmojiInfo(_, emojiName)).flatMap(onSelectEmoji)
+    })
   } yield ()
 }
 
