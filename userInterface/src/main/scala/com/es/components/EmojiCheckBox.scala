@@ -35,7 +35,8 @@ class EmojiCheckBox(
       IO {
         maybeEmoji match {
           case Some(newEmoji) =>
-            val awtEmojiImage = new ImageIcon(newEmoji.toSwingImage)
+            val awtEmojiImage =
+              new ImageIcon(newEmoji.toSwingImage.getScaledInstance(26, 26, java.awt.Image.SCALE_SMOOTH))
             underlying.setIcon(awtEmojiImage)
             awtEmojiImage.setImageObserver(underlying)
           case None =>

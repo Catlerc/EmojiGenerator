@@ -34,7 +34,7 @@ class Frame[T](underlying: JFrame, windowLock: CountDownLatch[IO], resultRef: Re
 }
 
 object Frame {
-  def apply[T](resizable: Boolean)(implicit dispatcher: Dispatcher[IO]): IO[Frame[T]] =
+  def apply[T](resizable: Boolean = false)(implicit dispatcher: Dispatcher[IO]): IO[Frame[T]] =
     for {
       windowLock <- CountDownLatch[IO](1)
       resultRef <- IO.ref(none[T])
@@ -44,6 +44,7 @@ object Frame {
           javax.swing.WindowConstants.DISPOSE_ON_CLOSE
         )
         frame.setResizable(resizable)
+        frame.setLocationRelativeTo(null)
         frame
       }
     } yield new Frame[T](frame, windowLock, resultRef)

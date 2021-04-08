@@ -5,7 +5,7 @@ import cats.effect.std.Dispatcher
 import com.es.components.{Button, EmojiOpenDialog, EmojiView, Frame, Panel}
 
 class EmojiOpenForm(frame: Frame[EmojiInfo], emojiInfoRef: Ref[IO, Option[EmojiInfo]]) {
-  val show: IO[Option[EmojiInfo]] = frame.show *> emojiInfoRef.get
+  val show: IO[Option[EmojiInfo]] = frame.show
   val close: IO[Unit] = emojiInfoRef.set(None) *> frame.close
 
 }
@@ -14,7 +14,7 @@ object EmojiOpenForm {
   def apply()(implicit dispatcher: Dispatcher[IO]): IO[EmojiOpenForm] =
     for {
       emojiInfoRef <- IO.ref[Option[EmojiInfo]](None)
-      frame <- Frame[EmojiInfo](resizable = true)
+      frame <- Frame[EmojiInfo]()
       emojiView <- EmojiView()
       emojiOpenInfo <- EmojiOpenDialog("Открыть эмодзи") { emoji =>
         emojiInfoRef.set(Some(emoji)) *>

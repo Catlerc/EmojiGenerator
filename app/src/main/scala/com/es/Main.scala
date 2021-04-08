@@ -4,7 +4,6 @@ import cats.effect.std.Dispatcher
 import cats.effect.{ExitCode, IO, IOApp}
 
 import java.io.{PrintWriter, StringWriter}
-import javax.swing.JOptionPane
 
 object Main extends IOApp {
   override def run(args: List[String]): IO[ExitCode] =
