@@ -23,16 +23,11 @@ object Main extends IOApp {
       }
       .onError(throwable =>
         IO.delay {
-          val stringWriter = new StringWriter
-          val printWriter = new PrintWriter(stringWriter)
-          throwable.printStackTrace(printWriter)
-          val errorString = stringWriter.toString
-          JOptionPane.showMessageDialog(
-            null,
-            errorString,
-            s"Error! ${throwable.getMessage}",
-            JOptionPane.ERROR_MESSAGE
-          ) // null :c
-        }
+            val stringWriter = new StringWriter
+            val printWriter = new PrintWriter(stringWriter)
+            throwable.printStackTrace(printWriter)
+            stringWriter.toString
+          }
+          .flatMap(Notification.error(s"Error! ${throwable.getMessage}", _))
       )
 }

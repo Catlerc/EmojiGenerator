@@ -10,7 +10,7 @@ import com.sksamuel.scrimage.nio.PngWriter
 import java.io.File
 import javax.swing.{JComponent, JOptionPane}
 
-class EmojiTransformForm(frame: Frame, restartFlagRef: Ref[IO, Boolean]) {
+class EmojiTransformForm(frame: Frame[Unit], restartFlagRef: Ref[IO, Boolean]) {
   val show: IO[Boolean] = frame.show *> restartFlagRef.get
   val close: IO[Unit] = frame.close
 }
@@ -19,7 +19,9 @@ object EmojiTransformForm {
   private def saveEmoji(sourceEmojiName: String)(info: EmojiInfo): IO[Unit] =
     IO {
       val applicationDir = System.getProperty("user.dir")
-      info.emoji.image.output(PngWriter.NoCompression, new File(s"$applicationDir/$sourceEmojiName/${info.name}.png"))
+      val file = new File(s"$applicationDir/$sourceEmojiName/${info.name}.png")
+      file.getParentFile.mkdirs
+      info.emoji.image.output(PngWriter.NoCompression, file)
     }
   private def updateView(
       info: EmojiInfo
@@ -30,7 +32,7 @@ object EmojiTransformForm {
   def apply(emojiInfo: EmojiInfo)(implicit dispatcher: Dispatcher[IO]): IO[EmojiTransformForm] =
     for {
       restartFlagRef <- IO.ref[Boolean](false)
-      frame <- Frame(resizable = true)
+      frame <- Frame[Unit](resizable = true)
       selectedEmoji <- EmojiView()
       _ <- selectedEmoji.setEmoji(Some(emojiInfo.emoji))
 

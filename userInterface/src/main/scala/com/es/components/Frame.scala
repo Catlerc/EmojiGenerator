@@ -1,20 +1,22 @@
 package com.es.components
 
-import cats.effect.IO
+import cats.syntax.option._
+import cats.effect.{IO, Ref}
 import cats.effect.std.{CountDownLatch, Dispatcher}
 
 import java.awt.event.{WindowAdapter, WindowEvent}
 import javax.swing.{JComponent, JFrame}
 
-class Frame(underlying: JFrame, windowLock: CountDownLatch[IO], onClose: IO[Unit])(implicit
+class Frame[T](underlying: JFrame, windowLock: CountDownLatch[IO], resultRef: Ref[IO, Option[T]])(implicit
     dispatcher: Dispatcher[IO]
 ) {
-  val show: IO[Unit] = IO {
+  val show: IO[Option[T]] = IO {
     underlying.addWindowListener(new WindowAdapter {
-      override def windowClosed(e: WindowEvent): Unit = dispatcher.unsafeRunSync(onClose *> windowLock.release)
+      override def windowClosed(e: WindowEvent): Unit = dispatcher.unsafeRunSync(windowLock.release)
     })
     underlying.setVisible(true)
-  } *> windowLock.await
+  } *> windowLock.await *> resultRef.get
+  def setResult(result: T): IO[Unit] = resultRef.set(Some(result))
   val close: IO[Unit] = IO {
     underlying.dispatchEvent(new WindowEvent(underlying, WindowEvent.WINDOW_CLOSING))
   }
@@ -32,9 +34,10 @@ class Frame(underlying: JFrame, windowLock: CountDownLatch[IO], onClose: IO[Unit
 }
 
 object Frame {
-  def apply(resizable: Boolean, onClose: IO[Unit] = IO.unit)(implicit dispatcher: Dispatcher[IO]): IO[Frame] =
+  def apply[T](resizable: Boolean)(implicit dispatcher: Dispatcher[IO]): IO[Frame[T]] =
     for {
       windowLock <- CountDownLatch[IO](1)
+      resultRef <- IO.ref(none[T])
       frame <- IO.delay {
         val frame = new JFrame
         frame.setDefaultCloseOperation(
@@ -43,5 +46,5 @@ object Frame {
         frame.setResizable(resizable)
         frame
       }
-    } yield new Frame(frame, windowLock, onClose)
+    } yield new Frame[T](frame, windowLock, resultRef)
 }
