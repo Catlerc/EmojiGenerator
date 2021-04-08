@@ -23,6 +23,7 @@ lazy val global = project
   )
 
 lazy val common = project
+  .settings(commonSettings: _*)
   .settings(
     commonSettings,
     name := "common",
@@ -30,11 +31,12 @@ lazy val common = project
   )
 
 lazy val app = project
+  .settings(commonSettings: _*)
   .settings(
-    commonSettings,
     name := "app",
     libraryDependencies ++= commonDependencies
   )
+  .enablePlugins(JavaAppPackaging)
   .dependsOn(
     common,
     userInterface,
@@ -42,8 +44,8 @@ lazy val app = project
   )
 
 lazy val userInterface = project
+  .settings(commonSettings: _*)
   .settings(
-    commonSettings,
     name := "userInterface",
     libraryDependencies ++= commonDependencies
   )
@@ -52,8 +54,8 @@ lazy val userInterface = project
   )
 
 lazy val imageProcessing = project
+  .settings(commonSettings: _*)
   .settings(
-    commonSettings,
     name := "imageProcessing",
     libraryDependencies ++= commonDependencies
   )
