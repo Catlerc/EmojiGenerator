@@ -1,4 +1,5 @@
 name := "EmojiGenerator"
+version := "1.0.0"
 organization in ThisBuild := "com.es"
 
 lazy val commonDependencies = List(
