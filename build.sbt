@@ -1,5 +1,4 @@
 name := "EmojiGenerator"
-version := "0.1"
 organization in ThisBuild := "com.es"
 
 lazy val commonDependencies = List(
@@ -34,6 +33,8 @@ lazy val app = project
   .settings(commonSettings: _*)
   .settings(
     name := "app",
+    version := "1.0.0",
+    packageName := "EmojiGenerator",
     libraryDependencies ++= commonDependencies
   )
   .enablePlugins(JavaAppPackaging)
