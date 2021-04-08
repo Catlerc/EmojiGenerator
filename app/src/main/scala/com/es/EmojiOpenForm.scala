@@ -6,15 +6,15 @@ import com.es.components.{Button, EmojiOpenDialog, EmojiView, Frame, Panel}
 
 class EmojiOpenForm(frame: Frame, emojiInfoRef: Ref[IO, Option[EmojiInfo]]) {
   val show: IO[Option[EmojiInfo]] = frame.show *> emojiInfoRef.get
-  val close: IO[Unit] = frame.close
+  val close: IO[Unit] = emojiInfoRef.set(None) *> frame.close
 
 }
 
 object EmojiOpenForm {
   def apply()(implicit dispatcher: Dispatcher[IO]): IO[EmojiOpenForm] =
     for {
-      frame <- Frame(resizable = true)
       emojiInfoRef <- IO.ref[Option[EmojiInfo]](None)
+      frame <- Frame(resizable = true, onClose = emojiInfoRef.set(None))
       emojiView <- EmojiView()
       emojiOpenInfo <- EmojiOpenDialog("Открыть эмодзи") { emoji =>
         emojiInfoRef.set(Some(emoji)) *>

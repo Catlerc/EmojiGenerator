@@ -6,10 +6,12 @@ import cats.effect.std.{CountDownLatch, Dispatcher}
 import java.awt.event.{WindowAdapter, WindowEvent}
 import javax.swing.{JComponent, JFrame}
 
-class Frame(underlying: JFrame, windowLock: CountDownLatch[IO])(implicit dispatcher: Dispatcher[IO]) {
+class Frame(underlying: JFrame, windowLock: CountDownLatch[IO], onClose: IO[Unit])(implicit
+    dispatcher: Dispatcher[IO]
+) {
   val show: IO[Unit] = IO {
     underlying.addWindowListener(new WindowAdapter {
-      override def windowClosed(e: WindowEvent): Unit = dispatcher.unsafeRunSync(windowLock.release)
+      override def windowClosed(e: WindowEvent): Unit = dispatcher.unsafeRunSync(onClose *> windowLock.release)
     })
     underlying.setVisible(true)
   } *> windowLock.await
@@ -30,7 +32,7 @@ class Frame(underlying: JFrame, windowLock: CountDownLatch[IO])(implicit dispatc
 }
 
 object Frame {
-  def apply(resizable: Boolean)(implicit dispatcher: Dispatcher[IO]): IO[Frame] =
+  def apply(resizable: Boolean, onClose: IO[Unit] = IO.unit)(implicit dispatcher: Dispatcher[IO]): IO[Frame] =
     for {
       windowLock <- CountDownLatch[IO](1)
       frame <- IO.delay {
@@ -41,5 +43,5 @@ object Frame {
         frame.setResizable(resizable)
         frame
       }
-    } yield new Frame(frame, windowLock)
+    } yield new Frame(frame, windowLock, onClose)
 }
